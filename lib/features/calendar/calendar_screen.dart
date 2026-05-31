@@ -64,6 +64,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       category: transactionSubtitle(tx),
                       amount: formatAmount(tx, currencyOverride: currency),
                       date: formatTransactionDate(tx.timestamp),
+                      type: tx.type,
                       onTap: () => context.push('/transactions/${tx.id}'),
                     );
                   },

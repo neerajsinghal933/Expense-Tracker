@@ -53,6 +53,7 @@ class TransactionListSection extends StatelessWidget {
             category: cat,
             amount: formatAmount(tx, currencyOverride: currency),
             date: formatTransactionDate(tx.timestamp),
+            type: tx.type,
             onTap:
                 onTransactionTap == null ? null : () => onTransactionTap!(tx),
           );
