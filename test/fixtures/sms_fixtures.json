@@ -1,0 +1,123 @@
+[
+  {
+    "id": "sms1",
+    "sender": "HDFCBK",
+    "body": "HDFC Bank: Rs. 2,500.00 debited from a/c XXXX1234 on 06-May-2026. Info: AMAZON PAY. Avl Bal Rs. 12,500.00",
+    "timestamp": 1715150000000
+  },
+  {
+    "id": "sms2",
+    "sender": "ICICIBANK",
+    "body": "ICICI: Card XXXXXX1234 spent Rs. 3,499.00 at FLIPKART on 08-May-2026. Avl Bal: Rs. 20,000",
+    "timestamp": 1715236400000
+  },
+  {
+    "id": "sms3",
+    "sender": "SBICRD",
+    "body": "SBIN: Your A/c 12345 is debited by INR 1,234.00 on 05-05-2026. Avl Bal: INR 5,000.00. Ref: POS12345.",
+    "timestamp": 1715060000000
+  },
+  {
+    "id": "sms4",
+    "sender": "UPI-PAY",
+    "body": "TXN of INR 299.00 is successful on UPI VPA: merchant@upi. Ref: TXNID1234.",
+    "timestamp": 1715312800000
+  },
+  {
+    "id": "sms5",
+    "sender": "PAYTM",
+    "body": "Paytm: Rs.500 debited for recharge at JIO. Balance Rs. 8000",
+    "timestamp": 1715399200000
+  },
+  {
+    "id": "sms6",
+    "sender": "AXISBK",
+    "body": "AXISBANK: IMPS of Rs. 1,250.50 to John Doe Ref: IMPS98765",
+    "timestamp": 1715485600000
+  },
+  {
+    "id": "sms7",
+    "sender": "AMZ-TRNS",
+    "body": "Amazon Pay: Your order #AMZ-1234 placed. Amount: INR 1,199.00",
+    "timestamp": 1715572000000
+  },
+  {
+    "id": "sms8",
+    "sender": "BHIMUPI",
+    "body": "BHIM UPI: Transaction of Rs. 250.00 is successful. Ref: UPI123",
+    "timestamp": 1715658400000
+  },
+  {
+    "id": "sms9",
+    "sender": "RAZORPAY",
+    "body": "Razorpay: Payment of INR 450.00 to MyStore successful. Ref: RZ123",
+    "timestamp": 1715744800000
+  },
+  {
+    "id": "sms10",
+    "sender": "SBIINB",
+    "body": "Credit alert: INR 5,000.00 credited to your A/c XXXX5678 on 09-05-2026. Ref: SALARY",
+    "timestamp": 1715831200000
+  },
+  {
+    "id": "sms11",
+    "sender": "PAYU",
+    "body": "Refund of Rs. 2,999.00 has been initiated for Order #FLP-9876",
+    "timestamp": 1715917600000
+  },
+  {
+    "id": "sms12",
+    "sender": "CARDSMS",
+    "body": "Card txn: Rs 699 at Dominos. Masked Card: XXXX4321",
+    "timestamp": 1716004000000
+  },
+  {
+    "id": "sms13",
+    "sender": "UPI-PAY",
+    "body": "SBI UPI: a/c credited by Rs. 1,200 via UPI-xxxx@paytm",
+    "timestamp": 1716090400000
+  },
+  {
+    "id": "sms14",
+    "sender": "EMI-ORG",
+    "body": "EMI of Rs. 3,500 paid towards ICICI EMI Ref: EMI001",
+    "timestamp": 1716176800000
+  },
+  {
+    "id": "sms15",
+    "sender": "ATMMSG",
+    "body": "ATM Withdrawal of Rs. 10,000.00 from ATM-XYZ. Avl Bal: Rs. 50,000",
+    "timestamp": 1716263200000
+  },
+  {
+    "id": "sms16",
+    "sender": "NEFTMSG",
+    "body": "Payment received INR 1500 from +91 98765 43210 via NEFT Ref NEFT123",
+    "timestamp": 1716349600000
+  },
+  {
+    "id": "sms17",
+    "sender": "QUICKPAY",
+    "body": "QuickPay: Rs. 89 paid to MetroMart. UPI Ref: QP789",
+    "timestamp": 1716436000000
+  },
+  {
+    "id": "sms18",
+    "sender": "GENBANK",
+    "body": "A/c debited by Rs. 250.00. Merchant: LocalStore on 10-05-2026. Bal Rs. 3,750",
+    "timestamp": 1716522400000
+  },
+  {
+    "id": "sms19",
+    "sender": "FAILED",
+    "body": "FAILED: UPI collect of INR 150.00 failed for merchant@upi",
+    "timestamp": 1716608800000
+  },
+  {
+    "id": "sms20",
+    "sender": "PAYTM",
+    "body": "UPI: Your a/c credited by INR 1,000.00 through PAYTM-123 on 07/05/2026. Ref: PYMNT345",
+    "timestamp": 1716695200000
+  }
+]
+
