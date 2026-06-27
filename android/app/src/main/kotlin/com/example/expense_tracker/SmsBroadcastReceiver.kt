@@ -12,9 +12,36 @@ import org.json.JSONObject
 class SmsBroadcastReceiver : BroadcastReceiver() {
     companion object {
         private const val TAG = "PulseMoneySms"
+        private const val MAX_PENDING_SMS = 100
+        private const val MAX_BODY_CHARS = 2000
         var methodChannel: MethodChannel? = null
         const val PREFS_NAME = "sms_prefs"
         const val KEY_PENDING = "pending_sms"
+        private val amountPattern = Regex(
+            """(?i)(?:rs\.?|inr|₹)\s*[0-9][0-9,]*(?:\.[0-9]{1,2})?|\b[0-9][0-9,]*(?:\.[0-9]{1,2})?\s*(?:rs\.?|inr)\b"""
+        )
+        private val transactionPattern = Regex(
+            """(?i)\b(?:debited?|credited?|spent|paid|withdrawn|received|refund|emi|upi|imps|neft|rtgs|transfer|txn|transaction|a/c|acct|account|card|balance|available)\b"""
+        )
+        private val financialSenderPattern = Regex(
+            """(?i)(?:bank|bnk|hdfc|icici|sbi|axis|kotak|yes|idfc|indus|union|boi|bob|canara|paytm|phonepe|gpay|upi|cred|card)"""
+        )
+        private val nonFinancialSensitivePattern = Regex(
+            """(?i)\b(?:otp|one\s*time\s*password|verification\s*code|login\s*code|password\s*reset|authenticate)\b"""
+        )
+
+        fun shouldQueueSms(sender: String, body: String): Boolean {
+            val hasAmount = amountPattern.containsMatchIn(body)
+            val hasTransactionSignal = transactionPattern.containsMatchIn(body)
+            val hasFinancialSender = financialSenderPattern.containsMatchIn(sender)
+
+            if (!hasAmount) return false
+            if (nonFinancialSensitivePattern.containsMatchIn(body) && !hasTransactionSignal) {
+                return false
+            }
+
+            return hasTransactionSignal || hasFinancialSender
+        }
 
         @Synchronized
         fun readPendingSms(context: Context): List<Map<String, Any>> {
@@ -79,11 +106,17 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
             val item = JSONObject()
             item.put("id", id)
             item.put("sender", payload["sender"])
-            item.put("body", payload["body"])
+            item.put("body", (payload["body"] as String).take(MAX_BODY_CHARS))
             item.put("timestamp", payload["timestamp"])
-            existing.put(item)
 
-            prefs.edit().putString(KEY_PENDING, existing.toString()).apply()
+            val bounded = JSONArray()
+            val keepFrom = (existing.length() - (MAX_PENDING_SMS - 1)).coerceAtLeast(0)
+            for (i in keepFrom until existing.length()) {
+                bounded.put(existing.getJSONObject(i))
+            }
+            bounded.put(item)
+
+            prefs.edit().putString(KEY_PENDING, bounded.toString()).apply()
             return true
         }
     }
@@ -98,6 +131,10 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
         for (sms in messages) {
             val body = sms.messageBody ?: continue
             val sender = sms.originatingAddress ?: ""
+            if (!shouldQueueSms(sender, body)) {
+                Log.d(TAG, "Ignored SMS without transaction signals")
+                continue
+            }
             val timestamp = sms.timestampMillis
             val id = "${sender}_${timestamp}_${body.hashCode()}"
 

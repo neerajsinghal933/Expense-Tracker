@@ -40,8 +40,8 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.file_download_outlined),
-            title: const Text('Export monthly Excel report'),
-            subtitle: const Text('Saved locally, then share'),
+            title: const Text('Export all-time Excel report'),
+            subtitle: const Text('Includes every transaction saved locally'),
             onTap: () async {
               try {
                 await ref.read(exportServiceProvider).shareReport();

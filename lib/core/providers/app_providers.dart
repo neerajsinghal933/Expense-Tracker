@@ -98,7 +98,6 @@ final exportServiceProvider = Provider<ExportService>((ref) {
   return ExportService(
     transactions: ref.watch(transactionRepositoryProvider),
     categories: ref.watch(categoryRepositoryProvider),
-    analytics: ref.watch(analyticsServiceProvider),
   );
 });
 

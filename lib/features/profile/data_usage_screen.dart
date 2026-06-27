@@ -19,7 +19,7 @@ class DataUsageScreen extends StatelessWidget {
             icon: Icons.phone_android,
             title: 'Local Storage',
             description:
-                'All data is stored on your device in an encrypted database. No cloud sync.',
+                'All data is stored on your device in the app private database. No cloud sync.',
           ),
           _InfoCard(
             icon: Icons.sms,
@@ -29,9 +29,9 @@ class DataUsageScreen extends StatelessWidget {
           ),
           _InfoCard(
             icon: Icons.lock,
-            title: 'Encryption',
+            title: 'Private App Storage',
             description:
-                'Local database is encrypted using industry-standard encryption. Your data is protected.',
+                'The app stores data in its private on-device database and disables Android cloud backup for release builds.',
           ),
           _InfoCard(
             icon: Icons.language,
@@ -52,11 +52,6 @@ class DataUsageScreen extends StatelessWidget {
               _PermissionItem(
                 permission: 'Receive SMS',
                 purpose: 'To process incoming SMS in the background',
-                required: false,
-              ),
-              _PermissionItem(
-                permission: 'Post Notifications',
-                purpose: 'To send budget alerts and reminders',
                 required: false,
               ),
             ],

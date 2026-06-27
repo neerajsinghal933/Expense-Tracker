@@ -2,26 +2,33 @@
     package="com.pulsemoney.finance">
 
     <!-- SMS permissions for local transaction detection only -->
-    <!-- All data is processed locally on the device -->
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <!-- All data is processed locally on the device, never uploaded -->
+    <uses-permission android:name="android.permission.READ_SMS"
+        android:required="false" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS"
+        android:required="false" />
 
-    <!-- Notification permission for reminders and alerts -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
 
     <application
         android:label="@string/app_name"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:usesCleartextTraffic="false">
 
         <!-- SMS Broadcast Receiver for background SMS processing -->
         <!-- Receives SMS even when the app is not running -->
         <!-- Messages are stored locally and processed by Dart layer -->
+        <!-- Exported for system SMS delivery; protected from third-party spoofing by BROADCAST_SMS -->
         <receiver
             android:name=".SmsBroadcastReceiver"
             android:enabled="true"
-            android:permission="android.permission.BROADCAST_SMS"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
             <intent-filter android:priority="1000">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>

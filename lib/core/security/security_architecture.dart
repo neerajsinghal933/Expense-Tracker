@@ -132,7 +132,6 @@ class SecurityPermissionConfig {
     // Current permissions:
     // - READ_SMS: For transaction detection
     // - RECEIVE_SMS: For background SMS handling
-    // - POST_NOTIFICATIONS: For alerts and reminders
     //
     // Unnecessary permissions should be removed:
     // - No location tracking
@@ -144,7 +143,6 @@ class SecurityPermissionConfig {
   static Future<void> auditPermissionUsage() async {
     // TODO: Verify permissions are only used for stated purposes
     // - SMS only read locally, never transmitted
-    // - Notifications only for user-relevant alerts
     // - No background data collection
   }
 }
@@ -208,8 +206,8 @@ class SecurityMonitoring {
 /// ✓ No sensitive data in screenshots
 /// ✓ No unnecessary permissions
 /// ✓ SMS processed locally only
-/// ✓ Database encrypted
-/// ✓ Secure key management
+/// TODO: Database encryption
+/// TODO: Secure key management
 /// ✓ Input validation
 /// ✓ Output encoding
 /// ✓ HTTPS only (when applicable)

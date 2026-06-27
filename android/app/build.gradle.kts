@@ -5,9 +5,14 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val releaseKeystoreFile = file("../../keystore.jks")
+val releaseStorePassword = System.getenv("KEYSTORE_PASSWORD")
+val releaseKeyPassword = System.getenv("KEY_PASSWORD")
+val releaseKeyAlias = System.getenv("KEY_ALIAS") ?: "pulse-money-key"
+
 android {
     namespace = "com.pulsemoney.finance"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -22,17 +27,17 @@ android {
     // Signing configuration for release builds
     signingConfigs {
         create("release") {
-            storeFile = file(System.getenv("KEYSTORE_PATH") ?: "keystore.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "password"
-            keyAlias = System.getenv("KEY_ALIAS") ?: "pulse-money-key"
-            keyPassword = System.getenv("KEY_PASSWORD") ?: "password"
+            storeFile = releaseKeystoreFile
+            keyAlias = releaseKeyAlias
+            storePassword = releaseStorePassword ?: ""
+            keyPassword = releaseKeyPassword ?: ""
         }
     }
 
     defaultConfig {
         applicationId = "com.pulsemoney.finance"
         minSdk = flutter.minSdkVersion
-        targetSdk = 35
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         
@@ -48,17 +53,16 @@ android {
         }
         
         release {
-    isMinifyEnabled = true
-    isShrinkResources = true
+            isMinifyEnabled = true
+            isShrinkResources = true
 
-    proguardFiles(
-        getDefaultProguardFile("proguard-android-optimize.txt"),
-        "proguard-rules.pro"
-    )
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
 
-    // TEMPORARY: Use debug signing for local testing
-    signingConfig = signingConfigs.getByName("debug")
-}
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
 
     // Split APKs per ABI for smaller downloads
@@ -74,4 +78,24 @@ android {
 
 flutter {
     source = "../.."
+}
+
+gradle.taskGraph.whenReady {
+    val releaseRequested = allTasks.any { task ->
+        task.path == ":app:assembleRelease" ||
+            task.path == ":app:bundleRelease" ||
+            task.name == "packageRelease"
+    }
+
+    if (releaseRequested) {
+        require(releaseKeystoreFile.exists()) {
+            "Release keystore not found at ${releaseKeystoreFile.path}"
+        }
+        require(!releaseStorePassword.isNullOrBlank()) {
+            "KEYSTORE_PASSWORD not set for release signing"
+        }
+        require(!releaseKeyPassword.isNullOrBlank()) {
+            "KEY_PASSWORD not set for release signing"
+        }
+    }
 }

@@ -29,21 +29,21 @@ class PrivacyPolicyScreen extends StatelessWidget {
           _Section(
             title: 'Local Storage Only',
             content:
-                '''Your transactions, budgets, and personal information are stored locally in an encrypted SQLite database.
+                '''Your transactions, budgets, and personal information are stored locally in the app's private on-device database.
 
 The app only accesses what it needs:
-• SMS messages (when enabled) for transaction detection
-• Camera (if you add receipts)
-• Local file storage''',
+• Incoming bank transaction SMS messages (when enabled)
+• Local files you choose for import/export
+• No location, contacts, camera, or microphone access''',
           ),
           _Section(
             title: 'SMS Permission',
-            content: '''SMS access is used solely for:
-• Reading bank transaction alerts
+            content: '''SMS access is optional and used solely for:
+• Receiving incoming bank transaction alerts
+• Reading transaction SMS content on this device
 • Categorizing expenses automatically
-• Understanding spending patterns
 
-This data is processed 100% locally and never sent anywhere.''',
+Pulse Money filters obvious non-financial messages before queuing them for processing. Transaction SMS content is processed locally and never sent anywhere.''',
           ),
           _Section(
             title: 'Offline Operation',

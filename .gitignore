@@ -6,6 +6,10 @@ build/
 pubspec.lock
 android/.gradle/
 android/app/google-services.json
+*.jks
+*.keystore
+android/key.properties
+android/keystore/
+*.md
 ios/Pods/
 ios/Runner/GeneratedPluginRegistrant.*
-

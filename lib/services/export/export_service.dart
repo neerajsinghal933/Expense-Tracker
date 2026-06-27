@@ -7,32 +7,39 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../data/repositories/category_repository.dart';
 import '../../data/repositories/transaction_repository.dart';
-import '../../services/analytics/analytics_service.dart';
+import '../../domain/constants/category_constants.dart';
 
 class ExportService {
   ExportService({
     required TransactionRepository transactions,
     required CategoryRepository categories,
-    required AnalyticsService analytics,
   })  : _transactions = transactions,
-        _categories = categories,
-        _analytics = analytics;
+        _categories = categories;
 
   final TransactionRepository _transactions;
   final CategoryRepository _categories;
-  final AnalyticsService _analytics;
 
-  Future<String> exportMonthlyReport({int? year, int? month}) async {
-    final now = DateTime.now();
-    final y = year ?? now.year;
-    final m = month ?? now.month;
-    final summary = await _analytics.monthlySummary(y, m);
+  Future<String> exportAllTimeReport() async {
     final txs = await _transactions.getAll();
-    final start = DateTime(y, m).millisecondsSinceEpoch;
-    final end = DateTime(y, m + 1).millisecondsSinceEpoch;
-    final monthTxs =
-        txs.where((t) => t.timestamp >= start && t.timestamp < end).toList();
+    txs.sort((a, b) => a.timestamp.compareTo(b.timestamp));
     final catMap = await _categories.getMap();
+    var totalExpense = 0.0;
+    var totalIncome = 0.0;
+    final expenseByCategory = <String, double>{};
+    final incomeByCategory = <String, double>{};
+
+    for (final t in txs) {
+      if (t.type == 'failed' || t.amount <= 0) continue;
+
+      final catId = t.categoryId ?? CategoryIds.other;
+      if (t.type == 'credit' || t.type == 'refund') {
+        totalIncome += t.amount;
+        incomeByCategory[catId] = (incomeByCategory[catId] ?? 0) + t.amount;
+      } else {
+        totalExpense += t.amount;
+        expenseByCategory[catId] = (expenseByCategory[catId] ?? 0) + t.amount;
+      }
+    }
 
     final excel = Excel.createExcel();
     final txSheet = excel['Transactions'];
@@ -49,7 +56,7 @@ class ExportService {
     ]);
 
     final dateFmt = DateFormat('dd-MMM-yyyy');
-    for (final t in monthTxs) {
+    for (final t in txs) {
       final cat = catMap[t.categoryId ?? '']?.name ?? 'Uncategorized';
       txSheet.appendRow([
         TextCellValue(
@@ -70,26 +77,32 @@ class ExportService {
       TextCellValue('Expense Tracker Report'),
     ]);
     summarySheet.appendRow([
-      TextCellValue('Month'),
-      TextCellValue(DateFormat('MMMM yyyy').format(DateTime(y, m))),
+      TextCellValue('Period'),
+      TextCellValue('All time'),
+    ]);
+    summarySheet.appendRow([
+      TextCellValue('Transactions exported'),
+      IntCellValue(txs.length),
     ]);
     summarySheet.appendRow([
       TextCellValue('Total expense'),
-      DoubleCellValue(summary.totalExpense),
+      DoubleCellValue(totalExpense),
     ]);
     summarySheet.appendRow([
       TextCellValue('Total income'),
-      DoubleCellValue(summary.totalIncome),
+      DoubleCellValue(totalIncome),
     ]);
     summarySheet.appendRow([TextCellValue('')]);
     summarySheet.appendRow([
       TextCellValue('Expense categories'),
       TextCellValue('Amount'),
     ]);
-    for (final c in summary.byCategoryExpense) {
+    final expenseEntries = expenseByCategory.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    for (final entry in expenseEntries) {
       summarySheet.appendRow([
-        TextCellValue(c.categoryName),
-        DoubleCellValue(c.amount),
+        TextCellValue(catMap[entry.key]?.name ?? entry.key),
+        DoubleCellValue(entry.value),
       ]);
     }
 
@@ -98,17 +111,20 @@ class ExportService {
       TextCellValue('Income categories'),
       TextCellValue('Amount'),
     ]);
-    for (final c in summary.byCategoryIncome) {
+    final incomeEntries = incomeByCategory.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    for (final entry in incomeEntries) {
       summarySheet.appendRow([
-        TextCellValue(c.categoryName),
-        DoubleCellValue(c.amount),
+        TextCellValue(catMap[entry.key]?.name ?? entry.key),
+        DoubleCellValue(entry.value),
       ]);
     }
 
     try {
       final dynamic encoded = excel.encode();
-      if (encoded == null)
+      if (encoded == null) {
         throw Exception('Failed to encode Excel file (null)');
+      }
 
       List<int> bytes;
       if (encoded is List<int>) {
@@ -135,8 +151,8 @@ class ExportService {
       }
 
       final dir = await getApplicationDocumentsDirectory();
-      final fileName =
-          'expense_report_${y}_${m.toString().padLeft(2, '0')}.xlsx';
+      final stamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+      final fileName = 'expense_report_all_time_$stamp.xlsx';
       final file = File('${dir.path}/$fileName');
       await file.writeAsBytes(bytes);
       return file.path;
@@ -147,7 +163,7 @@ class ExportService {
   }
 
   Future<void> shareReport({int? year, int? month}) async {
-    final path = await exportMonthlyReport(year: year, month: month);
-    await Share.shareXFiles([XFile(path)], text: 'Expense Tracker report');
+    final path = await exportAllTimeReport();
+    await Share.shareXFiles([XFile(path)], text: 'Pulse Money all-time report');
   }
 }
